@@ -14,6 +14,7 @@
         
         if ($mysqli->query($sql)) {
             echo "Nueva cuenta creada!";
+            header("Location: index.php");
         } else {
                 echo "Error: " . $sql . "<br>";
         }

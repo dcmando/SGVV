@@ -57,6 +57,12 @@ html {
 article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
   display: block;
 }
+.separador {
+  width: 100%;
+  height: 100px;
+}
+
+
 
 body {
   margin: 0;
@@ -4596,13 +4602,15 @@ input[type="button"].btn-block {
 .card-img-top,
 .card-img-bottom {
   flex-shrink: 0;
-  width: 100%;
 }
 
 .card-img,
 .card-img-top {
-  border-top-left-radius: calc(0.35rem - 1px);
-  border-top-right-radius: calc(0.35rem - 1px);
+  border-top-left-radius: calc(0.35rem - 10px);
+  border-top-right-radius: calc(0.35rem - 10px);
+  height: 200px;
+  width: 200px;
+  margin-top: 30px;
 }
 
 .card-img,
@@ -6579,7 +6587,7 @@ button.bg-dark:focus {
 }
 
 .rounded {
-  border-radius: 0.35rem !important;
+  border-radius: 200px !important;
 }
 
 .rounded-top {
@@ -10794,6 +10802,10 @@ a:focus {
   line-height: 1;
 }
 
+.card {
+  width: 100px;
+  height: 300px;
+}
 .card .card-header .dropdown .dropdown-menu {
   line-height: 1.5;
 }
