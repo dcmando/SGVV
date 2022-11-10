@@ -6,7 +6,7 @@
         $usuario = $_POST['usuario'];
         $clave = $_POST['clave'];
 
-        $sql = "SELECT usuario, clave, nombre, rol, apellidos, fotoperfil FROM User WHERE usuario='$usuario'";
+        $sql = "SELECT matricula, usuario, clave, nombre, rol, apellidos, fotoperfil FROM User WHERE usuario='$usuario'";
         
         $result = $mysqli->query($sql);
         $num = $result->num_rows;
@@ -24,6 +24,7 @@
                 $_SESSION['apellidos'] = $row['apellidos'];
                 $_SESSION['rol'] = $row['rol'];
                 $_SESSION['fotoperfil'] = $row['fotoperfil'];
+                $_SESSION['user'] = $row['usuario'];
 
                 header("Location: dashboard.php");
             } else {

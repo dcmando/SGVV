@@ -1,31 +1,71 @@
 <?php 
     include "../conexion.php";
     session_start();
-    $maticula = $_SESSION['matricula'];
-    $nombre = $_SESSION['nombre'];
-    $apellidos = $_SESSION['apellidos'];
-    $fotoperfil = $_SESSION['fotoperfil'];
+    $matricula = $_SESSION['matricula'];
 
-    $nombre_completo = $nombre . " " .$apellidos;
-
-    if($_POST){
-        $nombre = $_POST['nombre'];
-        $apellidos = $_POST['apellidos'];
-        $usuario = $_POST['usuario'];
-        $clave = $_POST['clave2'];
-
-        $clave_encriptada = sha1($clave); 
-
-        $sql = "INSERT INTO User VALUE (null, '$nombreC', '$apellidos', null, null, null, null, null, null, '$clave_encriptada', '$usuario');";
-
+        $sql = "SELECT * FROM User WHERE matricula='$matricula'";
         
-        if ($mysqli->query($sql)) {
-            echo "Nueva cuenta creada!";
-            header("Location: index.php");
-        } else {
-                echo "Error: " . $sql . "<br>";
+        $result = $mysqli->query($sql);
+        $num = $result->num_rows;
+
+        if($num > 0){
+            $row = $result->fetch_assoc();
+
+            $nombre = $row['nombre'];
+            $apellidos = $row['apellidos'];
+            $nombre_completo = $nombre. " " . $apellidos; 
+            $genero = $row['genero'];
+            $curp = $row['curp'];
+            $direccion = $row['direccion'];
+            $telefono = $row['telefono'];
+            $rol = $row['rol'];
+            $foto = base64_encode($fotoperfil = $row['fotoperfil']);
+            $clave = $row['clave'];
+            $usuario = $row['usuario'];
+
+            return $mensaje = "Con datos";
+        }else{
+            return $mensaje = "Sin datos";
         }
-    }
+
+        if($_POST){
+            $nombreUpdate = $_POST['nombre'];
+            $apellidosUpdate = $_POST['apellidos'];
+            $generoUpdate = 1 ;
+            $curpUpdate = 1;
+            $direccionUpdate = 1;
+            $telefonoUpdate = 1;
+            $rolUpdate = 1;
+            $fotoperfilUpdate = 1;
+            $usuarioUpdate = $_POST['usuario'];
+            $claveUpdate = $_POST['clave2'];            
+    
+            $clave_encriptada = sha1($claveUpdate); 
+            $fotoperfilbin = base64_decode($fotoperfilUpdate);
+    
+            $sql = "UPDATE user 
+            set 
+            nombre = '$nombreUpdate',
+            apellidos = '$apellidosUpdate',
+            genero = '$generoUpdate',
+            curp = '$curpUpdate',
+            direccion = '$direccionUpdate',
+            telefono = '$telefonoUpdate',
+            rol = '$rolUpdate',
+            fotoperfil = '$fotoperfilbin',
+            clave = '$clave_encriptada',
+            usuario = '$usuarioUpdate'
+            WHERE matricula = $matricula;
+            ";
+    
+            
+            if ($mysqli->query($sql)) {
+                echo "Nueva cuenta creada!";
+                header("Location: index.php");
+            } else {
+                    echo "Error: " . $sql . "<br>";
+            }
+        }   
 ?>
 
 <!DOCTYPE html>
@@ -338,13 +378,12 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php  echo $nombre_completo; ?></span>
-                                <?php                             
-                               $foto = base64_encode($fotoperfil);
-                                if($fotoperfil ==null){
+                                <?php                            
+                                if($foto ==null){
                                     echo '<img class="img-profile rounded-circle"
                                     src="../img/user.png">
                                     ';
-                                }else if ($fotoperfil != null){
+                                }else if ($foto != null){
                                     echo '<img class="img-profile rounded-circle"
                                     src="data:image/png;base64, '.$foto .'">
                                     ';
@@ -391,15 +430,14 @@
                         <form action="" method="POST">
                             <center>
                             <div class="card" style="width:400px">                       
-                            <?php                             
-                               $foto = base64_encode($fotoperfil);
-                                if($fotoperfil ==null){
+                            <?php
+                                if($foto ==null){
                                     echo '<center><img class="card-img-top rounded" src="../img/user.png" alt="image"></center>
                                     <div class="card-body">
                                         <input type="file" alt="" name="fotodeperfil">Seleccionar foto.</input>
                                     </div>
                                     ';
-                                }else if ($fotoperfil != null){
+                                }else if ($foto != null){
                                     echo '<center><img class="card-img-top rounded" src="data:image/png;base64,'.$foto .'"  alt="no_tienes_foto_de_perfil"></center> 
                                     <div class="card-body">
                                         <input type="file" alt="" name="fotodeperfil">Actualizar foto de perfil</input>
@@ -410,13 +448,34 @@
                             </div>
                             </center>
                             </br>
+                            <label for="mat">Esta es tu matrícula. <sub class="text-danger">Es unica y no se puede modificar!</sub></label>
+                            <input type="text" class="form-control" style="width: 30%;" disabled value="<?php echo $matricula?>">
+                            <br>
                         <div class="input-group mb-3">
-                                <span class="input-group-text">Nombre Completo</span>
-                                <input type="text" class="form-control" placeholder="<?php echo $nombre?>" >
-                                <input type="text" class="form-control" placeholder="<?php echo $apellidos?>">
+                                <span class="input-group-text">Nombre Completo/User</span>
+                                <input type="text" class="form-control" value="<?php echo $nombre?>" >
+                                <input type="text" class="form-control" value="<?php echo $apellidos?>">
+                                <input type="text" class="form-control" value="<?php echo $usuario?>">
                         </div>
-
-                        
+                        <br>
+                        <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="inputGenero">Genero</label>
+                                    <select id="inputGenero" class="form-control">
+                                        <option selected>Selecciona una opción</option>
+                                        <option>Hombre</option>
+                                        <option>Mujer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">                                
+                                <label for="inputCurp">CURP</label>
+                                    <input type="text" class="form-control" id="inputCurp" placeholder="EJEMPLO2991921AP">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="inputaddress">Dirección</label>
+                                <input type="text" class="form-control" id="inputaddress" placeholder="Calle de Ejemplo"> 
+                            </div>
+                        </div>                                               
 
 
                         </form>
