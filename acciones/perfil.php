@@ -23,9 +23,9 @@
             $clave = $row['clave'];
             $usuario = $row['usuario'];
 
-            return $mensaje = "Con datos";
+            $mensaje = "Con datos";
         }else{
-            return $mensaje = "Sin datos";
+            $mensaje = "Sin datos";
         }
 
         if($_POST){
