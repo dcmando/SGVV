@@ -1,7 +1,7 @@
-<?php 
+<?php
+    $matricula = $_REQUEST['matricula'];
+
     include "../conexion.php";
-    session_start();
-    $matricula = $_SESSION['matricula'];
 
         $sql = "SELECT * FROM User WHERE matricula='$matricula'";
         
@@ -13,30 +13,39 @@
 
             $nombre = $row['nombre'];
             $apellidos = $row['apellidos'];
-            $nombre_completo = $nombre. " " . $apellidos; 
-            $genero = $row['genero'];
-            $curp = $row['curp'];
-            $direccion = $row['direccion'];
-            $telefono = $row['telefono'];
-            $rol = $row['rol'];
+            $nombre_completo = $nombre. " " . $apellidos;            
             $foto = base64_encode($fotoperfil = $row['fotoperfil']);
-            $clave = $row['clave'];
-            $usuario = $row['usuario'];
-
-            if($genero == "H"){
-                $genero = "Hombre";
-            }else if($genero == "M"){
-                $genero = "Mujer";
-            }
 
             $mensaje = "Con datos";
         }else{
             $mensaje = "Sin datos";
         }
 
-       
-?>
+    $time = time();
 
+    if($_POST){
+        $mat_vendedor = $matricula;
+        $desc_venta = $_POST['descripcion'];
+        $no_personas = $_POST['noPersonas'];
+        $id_servicio = $_POST['clave_servicio'];
+        $horario = $_POST['horario'];
+        $costo = $_POST['costo'];
+
+        $sql = "INSERT INTO `historial_ventas` (`id_venta`, `desc_venta`, `no_personas`, `id_servicio`, `costo`, `fecha_registrada`, `fecha_actualizacion`, `mat_vendedor`, `horario`) VALUES (NULL, '$desc_venta', '$no_personas', '$id_servicio', '$costo', current_timestamp(), current_timestamp(), '$mat_vendedor', '$horario')";
+
+        
+        if ($mysqli->query($sql)) {
+            echo "Venta Realizada!";
+            header("Location: ../dashboard.php");
+        } else {
+                echo "Error: " . $sql . "<br>";
+        }
+
+
+        
+    } 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,15 +57,17 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>VIVE - Perfil</title>
+    <title>VIVE - Tablero</title>
 
     <!-- Custom fonts for this template-->
     <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+
 </head>
 
 <body id="page-top">
@@ -148,7 +159,7 @@
                         <a class="collapse-item" href="register.html">Misión</a>
                         <a class="collapse-item" href="forgot-password.html">¿Olvidaste tu Contraseña?</a>
                         <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Redes Sociales:</h6>
+                        <h6 class="collapse-header">Other Pages:</h6>
                         <a class="collapse-item" href="404.html">Facebook</a>
                         <a class="collapse-item" href="blank.html">Instagram</a>
                     </div>
@@ -204,46 +215,32 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-search fa-fw"></i>
                             </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Buscar..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
+                           
 
-                        
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php  echo $nombre_completo; ?></span>
-                                <?php                            
-                                if($foto ==null){
-                                    echo '<img class="img-profile rounded-circle"
-                                    src="../img/user.png">
-                                    ';
-                                }else if ($foto != null){
-                                    echo '<img class="img-profile rounded-circle"
-                                    src="data:image/png;base64, '.$foto .'">
-                                    ';
-                                }
+                                <?php                             
+                                $foto = base64_encode($fotoperfil);
+                                    if($fotoperfil ==null){
+                                        echo '<img class="img-profile rounded-circle"
+                                        src="../img/user.png">
+                                        ';
+                                    }else if ($fotoperfil != null){
+                                        echo '<img class="img-profile rounded-circle"
+                                        src="data:image/png;base64, '.$foto .'">
+                                        ';
+                                    }
                             ?>   
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="./perfil.php">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
@@ -267,120 +264,59 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                            
-                 <?php
-                    //   if ($GLOBALS["mensajeUpdate"] == 1) {
-                    //     echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    //     <strong>"'. $nombre .'"</strong>  Completaste tu información!.
-                    //     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    //       <span aria-hidden="true">&times;</span>
-                    //     </button>
-                    //   </div>' ;
-                    // } else if($GLOBALS["mensajeUpdate"] == 0){
-                    //     echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //     <strong>"'. $nombre .'"</strong>  Algo Salio Mal!. '. $sql .'
-                    //     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    //       <span aria-hidden="true">&times;</span>
-                    //     </button>
-                    //   </div>' ;
-                    // }
-                ?> 
+
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <?php                          
-                        if($row['fotoperfil'] == null){
-                            echo '<h1 class="h3 mb-0 text-gray-800">Estas completando tu perfil '  . $nombre_completo . '</h1>';
-                        } else {
-                            echo '<h1 class="h3 mb-0 text-gray-800">Tu perfil ' . '<strong>' . $nombre_completo . '</strong></h1>' ;
-                        }
-                        ?>
-                        <a href="./realizar_venta.php?matricula= <?php echo $matricula?>" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
-                                class="fas fa-cash-register fa-sm text-white-50"></i> Generar Venta</a>
+                        <h1 class="h3 mb-0 text-gray-800">Hola! <strong> <?php echo $nombre_completo; ?> </strong></h1>
+                        
                     </div>
 
-                  <main>
-                    <div class="container bg-light">
-                        <!-- Forms of the user profile -->
-                        <form action="./update_profile.php?matricula=<?php echo $matricula?>" method="POST" enctype="multipart/form-data">
-                            <center>
-                            <div class="card" style="width:500px">                       
-                            <?php
-                                if($foto ==null){
-                                    
-                                    echo '<center><img class="card-img-top rounded" style="width:200px; height: auto;  border-radius: 100% !important; margin: 10px;" src="../img/user.png" alt="image"></center>
-                                    <div class="card-body">
-                                        <input name="foto" type="file" alt="user" name="fotodeperfil">Seleccionar foto.</input>
-                                    </div>
-                                    ';
-                                }else if ($foto != null){
-                                    echo '<center><img class="card-img-top rounded" style="width:200px; height: auto; border-radius: 100% !important; margin: 10px;" src="data:image/png;base64,'. $foto .'"  alt="no_tienes_foto_de_perfil"></center> 
-                                    <div class="card-body">
-                                        <input name="foto" type="file" alt="user" name="fotodeperfil">Cambiar Foto</input>
-                                    </div>
-                                    ';
-                                }
-                            ?>                           
-                            </div>
-                            </center>
-                            </br>
-                            <label for="mat">Esta es tu matrícula. <sub class="text-danger">Es unica y no se puede modificar!</sub></label>
-                            <input type="text" class="form-control" style="width: 30%;" disabled value="<?php echo $matricula?>">
-                            <br>
-                        <div class="input-group mb-3">
-                                <span class="input-group-text">Nombre Completo/User</span>
-                                <input name="nombre" id="nombre" type="text" class="form-control" value="<?php echo $nombre?>" required>
-                                <input name="apellidos" id="apellidos" type="text" class="form-control" value="<?php echo $apellidos?>" required>
-                                <input name="user" id="user" type="text" class="form-control" value="<?php echo $usuario?>" required>
+                    <br>
+                    <br>
+                    <br>
+
+
+                    <form action="#" method="POST" enctype="multipart/form-data">
+                           
+                            
+                        <div class="input-group mb-4">
+                                <span class="input-group-text">Servicio</span>
+                                <input name="clave_servicio" id="clave_servicio" type="text" class="form-control" placeholder="213" required>
                         </div>
+                        
+                        <div class="form-group col-md-13">
+                                    <label for="inputDesc">Descripción de la venta.</label>
+                                    <textarea name="descripcion" id="descripcion" rows="3" cols="300" class="form-control" required></textarea>
+                                </div>
+
                         <br>
                         <div class="form-row">
                                 <div class="form-group col-md-4">
-                                    <label for="inputGenero">Genero</label>
-                                    <select name="genero" id="inputGenero" class="form-control" required>
-                                        <option selected><?php echo $genero?></option>
-                                        <option>Hombre</option>
-                                        <option>Mujer</option>
+                                    <label for="inputHorario">Horario</label>
+                                    <select name="horario" id="inputHorario" class="form-control" required>
+                                        <option selected>Selecciona una opcion</option>
+                                        <option>01:00:00 PM</option>
+                                        <option>02:00:00 PM</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">                                
-                                <label for="inputCurp">CURP</label>
-                                    <input name="curp" type="text" class="form-control" id="inputCurp" placeholder="EJEMPLO2991921AP" value="<?php echo $curp?>" required>
+                                <label for="inputPersonas">No. Personas</label>
+                                    <input name="noPersonas" type="number" class="form-control" id="inputPersonas" placeholder="1,2,3..." value="<?php echo $curp?>" required>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="inputaddress">Dirección</label>
-                                <input name="direccion" type="text" class="form-control" id="inputaddress" placeholder="Calle de Ejemplo" value="<?php echo $direccion?>" required> 
+                                    <label for="inputCosto">Costo</label>
+                                <input name="costo" type="number" class="form-control" id="inputCosto" placeholder="0000" value="<?php echo $direccion?>" required> 
                             </div>
-                        </div>     
-                        <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="inputGenero">Rol de Trabajador</label>
-                                    <select name="rol_trabajador" id="inputGenero" class="form-control" required>
-                                        <option selected><?php echo $rol?></option>
-                                        <option>Guía</option>
-                                        <option>Promotor</option>
-                                        <option>Guía/Promotor</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-4">                                
-                                <label for="inputCurp">Telefono</label>
-                                    <input name="telefono" type="text" class="form-control" id="inputCurp" placeholder="###-###-####" value="<?php echo $telefono?>" required>
-                                </div>
-                               
-                                    <div class="form-group col-md-4">
-                                    <label for="inputaddress">Clave de Acceso</label>
-                                    <br> 
-                                    <a href="./recover_password.php" class="btn btn-primary form-group col-md-12">Cambiar Clave</a>
-                                    </div>
-                        </div>                                                  
+                        </div>           
 
-                        <button type="submit" class="btn btn-success col-md-3">
-                                        Guardar Cambios
+                        <button type="submit" class="btn btn-primary col-md-3">
+                                       Realizar Venta
                         </button>
                         </form>
-                        <div class="separador"></div>
-                    </div>
-
-                  </main>
+                        <br>
+                        <br>
+            </div>
+            <!-- End of Main Content -->
 
             <!-- Footer -->
             <footer class="sticky-footer bg-white">

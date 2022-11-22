@@ -6587,7 +6587,7 @@ button.bg-dark:focus {
 }
 
 .rounded {
-  border-radius: 200px !important;
+  border-radius: 0.2rem !important;
 }
 
 .rounded-top {
